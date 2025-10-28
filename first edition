@@ -1,0 +1,56 @@
+import json
+
+
+notices = []
+notice_file = "notices.json"
+
+def load_notices():
+    global notices
+    try:
+        with open(notice_file) as json_data:
+            notices = json.load(json_data)
+    except FileNotFoundError:
+        notices = []
+    except json.decoder.JSONDecodeError:
+        notices = []
+
+def save_notices():
+    global notices
+    with open(notice_file, "w") as json_data:
+        json.dump(notices, json_data, indent=2)
+
+def show_board():
+    print("=-=-= NOTICE BOARD =-=-=")
+    if notices:
+        for i, notice in enumerate(notices, 1):
+            print(f"{i}. {notice}")
+    else:
+        print("(No notices)")
+    print("=-=" * 8)
+
+def add():
+    print("=-=" * 8)
+    notice = input("Enter notice: ")
+    notices.append(notice)
+    save_notices()
+    print("Notice Added!")
+
+def remove():
+    show_board()
+    num = int(input("Remove which number?: "))
+    notices.pop(num - 1)
+    save_notices()
+    print("Notice has been removed!")
+
+load_notices()
+
+while True:
+    show_board()
+    print("[1] Add  [2] Remove a notice  [3] Quit")
+    choice = input("Enter your choice: ")
+    if choice == "1":
+        add()
+    elif choice == "2":
+        remove()
+    elif choice == "3":
+        break

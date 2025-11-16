@@ -1,0 +1,133 @@
+import json
+import tkinter as tk
+from tkinter import simpledialog, messagebox
+
+notices = []
+notice_file = "notices.json"
+current_user = None
+
+def load_notices():
+    global notices
+    try:
+        with open(notice_file) as json_data:
+            notices = json.load(json_data)
+    except FileNotFoundError:
+        notices = []
+    except json.decoder.JSONDecodeError:
+        notices = []
+
+def save_notices():
+    with open(notice_file, "w") as json_data:
+        json.dump(notices, json_data)
+
+def show_board():
+    listbox.delete(0, tk.END)
+    if not notices:
+        listbox.insert(tk.END, "(No notices)")
+        return
+    for i, notice in enumerate(notices, 1):
+        listbox.insert(tk.END, f"{i}. {notice}")
+def login():
+    global current_user
+    username = simpledialog.askstring("LOGIN", "Username (admin/student):")
+    if username:
+        current_user = username
+        window.title(f"Notice Board - {username}")
+        if username == "admin":
+            btn_add.config(state=tk.NORMAL)
+            btn_edit.config(state=tk.NORMAL)
+            btn_remove.config(state=tk.NORMAL)
+        else:
+            btn_add.config(state=tk.DISABLED)
+            btn_edit.config(state=tk.DISABLED)
+            btn_remove.config(state=tk.DISABLED)
+
+def add():
+    notice = simpledialog.askstring("Add Notice", "Enter notice:")
+    if notice:
+        notices.append(notice)
+        save_notices()
+        show_board()
+        messagebox.showinfo("Success", "Notice Added!")
+
+def edit():
+    sel = listbox.curselection()
+    if not sel:
+        messagebox.showwarning("Error", "Select a notice!")
+        return
+    new = simpledialog.askstring("Edit", "Edit notice:", initialvalue=notices[sel[0]])
+    if new:
+        notices[sel[0]] = new
+        save_notices()
+        show_board()
+        messagebox.showinfo("Success", "Notice updated!")
+
+def remove():
+    sel = listbox.curselection()
+    if not sel:
+        messagebox.showwarning("Error", "Select a notice to remove!")
+        return
+    notices.pop(sel[0])
+    save_notices()
+    show_board()
+    messagebox.showinfo("Success", "Notice has been removed!")
+
+def view():
+    sel = listbox.curselection()
+    if not sel:
+        messagebox.showwarning("Error", "Select a notice!")
+        return
+    messagebox.showinfo("Notice", notices[sel[0]])
+
+window = tk.Tk()
+window.title("Notice Board")
+window.geometry("650x450")
+
+try:
+    window.iconbitmap("noticeboard.png")
+except:
+    pass
+
+try:
+    window.iconbitmap("noticeboard.ico")
+except:
+    pass
+
+try:
+    icon = tk.PhotoImage(file='noticeboard.png')
+    window.iconphoto(False, icon)
+    photo1 = icon.subsample(6, 6)
+except:
+    photo1 = None
+
+title = tk.Label(window, text="NOTICE BOARD", font=("Montserrat", 14, "bold"), image=photo1, compound="left")
+title.pack(pady=5)
+
+listbox = tk.Listbox(window, height=17, width=80, font=("Montserrat", 10))
+listbox.pack(padx=10, pady=10)
+
+frame = tk.Frame(window)
+frame.pack(pady=5)
+
+btn_login = tk.Button(frame, text="Login", command=login, width=12, bg="blue", fg="white")
+btn_login.pack(side=tk.LEFT, padx=5)
+
+
+btn_add = tk.Button(frame, text="Add", command=add, width=12, bg="#4CAF50", fg="white", state=tk.DISABLED)
+btn_add.pack(side=tk.LEFT, padx=5)
+
+btn_edit = tk.Button(frame, text="Edit", command=edit, width=12, bg="#FF9800", fg="white", state=tk.DISABLED)
+btn_edit.pack(side=tk.LEFT, padx=5)
+
+btn_remove = tk.Button(frame, text="Remove", command=remove, width=12, bg="#f44336", fg="white", state=tk.DISABLED)
+btn_remove.pack(side=tk.LEFT, padx=5)
+
+btn_view_notice = tk.Button(frame, text="View", command=view, width=12, bg="purple", fg="white")
+btn_view_notice.pack(side=tk.LEFT, padx=5)
+
+btn_quit = tk.Button(frame, text="Quit", command=window.quit, width=12, bg="#2196F3", fg="white")
+btn_quit.pack(side=tk.RIGHT, padx=5)
+
+load_notices()
+show_board()
+window.mainloop()

@@ -1,12 +1,10 @@
 import tkinter as tk
-from tkinter import messagebox, simpledialog
 import json 
 
 notices = []
 notice_file = "notices.json"
 teachers_file = "teachers.json"
 current_user = None
-
 
 def load_notices():
     global notices
@@ -39,104 +37,116 @@ def save_notices():
 def register():
     regis_window = tk.Toplevel(window)
     regis_window.title("Registration")
-    regis_window.geometry("400x425")
+    regis_window.geometry("600x700")
     regis_window.resizable(False, False)
     regis_window.configure(bg="white")
     
     regis_window.transient(window)
     regis_window.grab_set()
     
-    title_label = tk.Label(regis_window, text="Teacher Registration", font=("Helvetica", 18, "bold"), bg="white")
-    title_label.pack(pady=30)
+    try:
+        if 'icon' in globals() and icon:
+            regis_window.iconphoto(False, icon)
+    except:
+        pass
     
-    name_label = tk.Label(regis_window, text="Teacher Name:", font=("Helvetica", 10), bg="white", anchor="w")
-    name_label.pack(pady=(10, 5), padx=40, fill="x")
-    name_entry = tk.Entry(regis_window, font=("Helvetica", 11), relief=tk.SOLID, bd=1)
-    name_entry.pack(pady=5, padx=40, fill="x", ipady=5)
+
+    title_label = tk.Label(regis_window, text="Teacher Registration", font=("Helvetica", 24, "bold"), bg="white")
+    title_label.pack(pady=40)
     
-    id_label = tk.Label(regis_window, text="Teacher ID:", font=("Helvetica", 10), bg="white", anchor="w")
-    id_label.pack(pady=(15, 5), padx=40, fill="x")
-    id_entry = tk.Entry(regis_window, font=("Helvetica", 11), relief=tk.SOLID, bd=1)
-    id_entry.pack(pady=5, padx=40, fill="x", ipady=5)
+    name_label = tk.Label(regis_window, text="Teacher Name:", font=("Helvetica", 13), bg="white", anchor="w")
+    name_label.pack(pady=(15, 8), padx=50, fill="x")
+    name_entry = tk.Entry(regis_window, font=("Helvetica", 13), relief=tk.SOLID, bd=2)
+    name_entry.pack(pady=8, padx=50, fill="x", ipady=8)
     
-    pwd_label = tk.Label(regis_window, text="Password:", font=("Helvetica", 10), bg="white", anchor="w")
-    pwd_label.pack(pady=(15, 5), padx=40, fill="x")
-    pwd_entry = tk.Entry(regis_window, font=("Helvetica", 11), show="*", relief=tk.SOLID, bd=1)
-    pwd_entry.pack(pady=5, padx=40, fill="x", ipady=5)
+    id_label = tk.Label(regis_window, text="Teacher ID:", font=("Helvetica", 13), bg="white", anchor="w")
+    id_label.pack(pady=(20, 8), padx=50, fill="x")
+    id_entry = tk.Entry(regis_window, font=("Helvetica", 13), relief=tk.SOLID, bd=2)
+    id_entry.pack(pady=8, padx=50, fill="x", ipady=8)
+    
+    pwd_label = tk.Label(regis_window, text="Password:", font=("Helvetica", 13), bg="white", anchor="w")
+    pwd_label.pack(pady=(20, 8), padx=50, fill="x")
+    pwd_entry = tk.Entry(regis_window, font=("Helvetica", 13), show="*", relief=tk.SOLID, bd=2)
+    pwd_entry.pack(pady=8, padx=50, fill="x", ipady=8)
+    
+    confirm_pwd_label = tk.Label(regis_window, text="Confirm Password:", font=("Helvetica", 13), bg="white", anchor="w")
+    confirm_pwd_label.pack(pady=(20, 8), padx=50, fill="x")
+    confirm_pwd_entry = tk.Entry(regis_window, font=("Helvetica", 13), show="*", relief=tk.SOLID, bd=2)
+    confirm_pwd_entry.pack(pady=8, padx=50, fill="x", ipady=8)
+
+    
     
     def submit():
         name = name_entry.get().strip()
         tid = id_entry.get().strip()
         pwd = pwd_entry.get().strip()
+        confirm_pwd = confirm_pwd_entry.get().strip()
         
-        if not name or not tid or not pwd:
-            messagebox.showerror("Error", "All fields are required!")
+        
+
+        if not name or not tid or not pwd or not confirm_pwd:
+            return
+        
+        if pwd != confirm_pwd:
             return
         
         if tid in teachers:
-            messagebox.showerror("Error", "Teacher ID already exists!")
             return
         
         teachers[tid] = {"password": pwd, "name": name}
         save_teachers()
-        messagebox.showinfo("Success", "Teacher Registered Successfully!")
         regis_window.destroy()
+        
     
-    register_btn = tk.Button(regis_window, text="Register", command=submit, font=("Helvetica", 12, "bold"), bg="green", fg="white", width=20, height=2, relief=tk.FLAT, cursor="hand2")
-    register_btn.pack(pady=30)
+    register_btn = tk.Button(regis_window, text="Register", command=submit, font=("Helvetica", 14, "bold"), bg="#90EE90", fg="#1a1a1a", width=25, height=3, relief=tk.FLAT, cursor="hand2")
+    register_btn.pack(pady=40)
     
     regis_window.focus_set()
     name_entry.focus()
-
-def show_board():
-    listbox.delete(0, tk.END)
-    if current_user is None:
-        listbox.insert(tk.END, "(Please sign in to check notices)")
-        return
-
-    if not notices:
-        listbox.insert(tk.END, "(No notices)")
-        return
-
-    for i, notice in enumerate(notices, 1):
-        if isinstance(notice, dict):
-            listbox.insert(tk.END, f"{i}. {notice['title']}")
-        else:
-            listbox.insert(tk.END, f"{i}. {notice}")
-
 
 def login():
     global current_user
     
     login_window = tk.Toplevel(window)
     login_window.title("Login")
-    login_window.geometry("400x350")
+    login_window.geometry("600x500")
     login_window.resizable(False, False)
     login_window.configure(bg="white")
     
     login_window.transient(window)
     login_window.grab_set()
+
     
-    title_label = tk.Label(login_window, text="Teacher Login", font=("Helvetica", 18, "bold"), bg="white")
-    title_label.pack(pady=30)
+    try:
+        if 'icon' in globals() and icon:
+            login_window.iconphoto(False, icon)
+    except:
+        pass
     
-    id_label = tk.Label(login_window, text="Teacher ID:", font=("Helvetica", 10), bg="white", anchor="w")
-    id_label.pack(pady=(15, 5), padx=40, fill="x")
-    id_entry = tk.Entry(login_window, font=("Helvetica", 11), relief=tk.SOLID, bd=1)
-    id_entry.pack(pady=5, padx=40, fill="x", ipady=5)
     
-    pwd_label = tk.Label(login_window, text="Password:", font=("Helvetica", 10), bg="white", anchor="w")
-    pwd_label.pack(pady=(15, 5), padx=40, fill="x")
-    pwd_entry = tk.Entry(login_window, font=("Helvetica", 11), show="*", relief=tk.SOLID, bd=1)
-    pwd_entry.pack(pady=5, padx=40, fill="x", ipady=5)
+    title_label = tk.Label(login_window, text="Teacher Login", font=("Helvetica", 24, "bold"), bg="white")
+    title_label.pack(pady=40)
+    
+    id_label = tk.Label(login_window, text="Teacher ID:", font=("Helvetica", 13), bg="white", anchor="w")
+    id_label.pack(pady=(20, 8), padx=50, fill="x")
+    id_entry = tk.Entry(login_window, font=("Helvetica", 13), relief=tk.SOLID, bd=2)
+    id_entry.pack(pady=8, padx=50, fill="x", ipady=8)
+    
+    pwd_label = tk.Label(login_window, text="Password:", font=("Helvetica", 13), bg="white", anchor="w")
+    pwd_label.pack(pady=(20, 8), padx=50, fill="x")
+    pwd_entry = tk.Entry(login_window, font=("Helvetica", 13), show="*", relief=tk.SOLID, bd=2)
+    pwd_entry.pack(pady=8, padx=50, fill="x", ipady=8)
+
+    
     
     def submit_login():
         global current_user
         tid = id_entry.get().strip()
         pwd = pwd_entry.get().strip()
         
+        
+
         if not tid or not pwd:
-            messagebox.showerror("Error", "All fields are required!")
             return
         
         if tid == "admin" and pwd == "admin123":
@@ -148,10 +158,8 @@ def login():
             btn_remove.config(state=tk.NORMAL)
             btn_view_notice.config(state=tk.NORMAL)
             btn_register.config(state=tk.NORMAL)
-            btn_logout.config(state=tk.NORMAL)
-            btn_login.config(state=tk.DISABLED)
+            btn_login.config(state=tk.NORMAL, text="Log Out", command=logout)
             show_board()
-            messagebox.showinfo("Login", "Admin login successful!")
             login_window.destroy()
         
         elif tid in teachers and teachers[tid]["password"] == pwd:
@@ -163,16 +171,14 @@ def login():
             btn_remove.config(state=tk.DISABLED)
             btn_view_notice.config(state=tk.NORMAL)
             btn_register.config(state=tk.DISABLED)
-            btn_logout.config(state=tk.NORMAL)
-            btn_login.config(state=tk.DISABLED)
+            btn_login.config(state=tk.NORMAL, text="Log Out", command=logout)
             show_board()
-            messagebox.showinfo("Login", "Teacher login successful!")
             login_window.destroy()
         else:
-            messagebox.showerror("Error", "Invalid ID or Password!")
+            return 
     
-    login_btn = tk.Button(login_window, text="Login", command=submit_login, font=("Helvetica", 12, "bold"), bg="blue", fg="white", width=20, height=2, relief=tk.FLAT, cursor="hand2")
-    login_btn.pack(pady=30)
+    login_btn = tk.Button(login_window, text="Login", command=submit_login, font=("Helvetica", 14, "bold"), bg="#87CEEB", fg="#1a1a1a", width=25, height=3, relief=tk.FLAT, cursor="hand2")
+    login_btn.pack(pady=40)
     
     login_window.focus_set()
     id_entry.focus()
@@ -180,46 +186,56 @@ def login():
 def add():
     add_window = tk.Toplevel(window)
     add_window.title("Add Notice")
-    add_window.geometry("500x450")
+    add_window.geometry("700x600")
     add_window.resizable(False, False)
     add_window.configure(bg="white")
     
     add_window.transient(window)
     add_window.grab_set()
+
     
-    header_label = tk.Label(add_window, text="Add New Notice", font=("Helvetica", 18, "bold"), bg="white")
-    header_label.pack(pady=30)
+    try:
+        if 'icon' in globals() and icon:
+            add_window.iconphoto(False, icon)
+    except:
+        pass
     
-    title_label = tk.Label(add_window, text="Notice Title:", font=("Helvetica", 10), bg="white", anchor="w")
-    title_label.pack(pady=(10, 5), padx=40, fill="x")
-    title_entry = tk.Entry(add_window, font=("Helvetica", 11), relief=tk.SOLID, bd=1)
-    title_entry.pack(pady=5, padx=40, fill="x", ipady=5)
     
-    desc_label = tk.Label(add_window, text="Notice Description:", font=("Helvetica", 10), bg="white", anchor="w")
-    desc_label.pack(pady=(15, 5), padx=40, fill="x")
-    desc_text = tk.Text(add_window, font=("Helvetica", 11), relief=tk.SOLID, bd=1, height=8, wrap=tk.WORD)
-    desc_text.pack(pady=5, padx=40, fill="both", expand=True)
+    header_label = tk.Label(add_window, text="Add New Notice", font=("Helvetica", 24, "bold"), bg="white")
+    header_label.pack(pady=40)
+    
+    title_label = tk.Label(add_window, text="Notice Title:", font=("Helvetica", 13), bg="white", anchor="w")
+    title_label.pack(pady=(15, 8), padx=50, fill="x")
+    title_entry = tk.Entry(add_window, font=("Helvetica", 13), relief=tk.SOLID, bd=2)
+    title_entry.pack(pady=8, padx=50, fill="x", ipady=8)
+    
+    desc_label = tk.Label(add_window, text="Notice Description:", font=("Helvetica", 13), bg="white", anchor="w")
+    desc_label.pack(pady=(20, 8), padx=50, fill="x")
+    desc_text = tk.Text(add_window, font=("Helvetica", 12), relief=tk.SOLID, bd=2, height=10, wrap=tk.WORD)
+    desc_text.pack(pady=8, padx=50, fill="both", expand=True)
+
+    
     
     def submit_notice():
         title = title_entry.get().strip()
         description = desc_text.get("1.0", tk.END).strip()
         
+        
+        
         if not title:
-            messagebox.showerror("Error", "Title is required!")
             return
         
         if not description:
-            messagebox.showerror("Error", "Description is required!")
             return
         
         notice = {"title": title, "description": description}
         notices.append(notice)
         save_notices()
         show_board()
-        messagebox.showinfo("Success", "Notice Added!")
         add_window.destroy()
+        
     
-    add_btn = tk.Button(add_window, text="Add Notice", command=submit_notice, font=("Helvetica", 12, "bold"), bg="green", fg="white", width=20, height=2, relief=tk.FLAT, cursor="hand2")
+    add_btn = tk.Button(add_window, text="Add Notice", command=submit_notice, font=("Helvetica", 14, "bold"), bg="#90EE90", fg="#1a1a1a", width=25, height=3, relief=tk.FLAT, cursor="hand2")
     add_btn.pack(pady=20)
     
     add_window.focus_set()
@@ -228,10 +244,14 @@ def add():
 def edit():
     sel = listbox.curselection()
     if not sel:
-        messagebox.showwarning("Error", "Select a notice!")
-        return
+        return 
     
-    selected_notice = notices[sel[0]]
+    index = sel[0]
+    
+    if not notices or index >= len(notices):
+         return 
+         
+    selected_notice = notices[index]
     
     if isinstance(selected_notice, str):
         old_title = selected_notice
@@ -242,47 +262,57 @@ def edit():
     
     edit_window = tk.Toplevel(window)
     edit_window.title("Edit Notice")
-    edit_window.geometry("500x450")
+    edit_window.geometry("700x600")
     edit_window.resizable(False, False)
     edit_window.configure(bg="white")
     
     edit_window.transient(window)
     edit_window.grab_set()
+
     
-    header_label = tk.Label(edit_window, text="Edit Notice", font=("Helvetica", 18, "bold"), bg="white")
-    header_label.pack(pady=30)
+    try:
+        if 'icon' in globals() and icon:
+            edit_window.iconphoto(False, icon)
+    except:
+        pass
     
-    title_label = tk.Label(edit_window, text="Notice Title:", font=("Helvetica", 10), bg="white", anchor="w")
-    title_label.pack(pady=(10, 5), padx=40, fill="x")
-    title_entry = tk.Entry(edit_window, font=("Helvetica", 11), relief=tk.SOLID, bd=1)
-    title_entry.pack(pady=5, padx=40, fill="x", ipady=5)
+    
+    header_label = tk.Label(edit_window, text="Edit Notice", font=("Helvetica", 24, "bold"), bg="white")
+    header_label.pack(pady=40)
+    
+    title_label = tk.Label(edit_window, text="Notice Title:", font=("Helvetica", 13), bg="white", anchor="w")
+    title_label.pack(pady=(15, 8), padx=50, fill="x")
+    title_entry = tk.Entry(edit_window, font=("Helvetica", 13), relief=tk.SOLID, bd=2)
+    title_entry.pack(pady=8, padx=50, fill="x", ipady=8)
     title_entry.insert(0, old_title)
     
-    desc_label = tk.Label(edit_window, text="Notice Description:", font=("Helvetica", 10), bg="white", anchor="w")
-    desc_label.pack(pady=(15, 5), padx=40, fill="x")
-    desc_text = tk.Text(edit_window, font=("Helvetica", 11), relief=tk.SOLID, bd=1, height=8, wrap=tk.WORD)
-    desc_text.pack(pady=5, padx=40, fill="both", expand=True)
+    desc_label = tk.Label(edit_window, text="Notice Description:", font=("Helvetica", 13), bg="white", anchor="w")
+    desc_label.pack(pady=(20, 8), padx=50, fill="x")
+    desc_text = tk.Text(edit_window, font=("Helvetica", 12), relief=tk.SOLID, bd=2, height=10, wrap=tk.WORD)
+    desc_text.pack(pady=8, padx=50, fill="both", expand=True)
     desc_text.insert("1.0", old_desc)
+
+    
     
     def submit_edit():
         title = title_entry.get().strip()
         description = desc_text.get("1.0", tk.END).strip()
         
+        
+
         if not title:
-            messagebox.showerror("Error", "Title is required!")
             return
         
         if not description:
-            messagebox.showerror("Error", "Description is required!")
             return
         
-        notices[sel[0]] = {"title": title, "description": description}
+        notices[index] = {"title": title, "description": description}
         save_notices()
         show_board()
-        messagebox.showinfo("Success", "Notice updated!")
+        
         edit_window.destroy()
     
-    update_btn = tk.Button(edit_window, text="Update Notice", command=submit_edit, font=("Helvetica", 12, "bold"), bg="orange", fg="white", width=20, height=2, relief=tk.FLAT, cursor="hand2")
+    update_btn = tk.Button(edit_window, text="Update Notice", command=submit_edit, font=("Helvetica", 14, "bold"), bg="#FFD699", fg="#1a1a1a", width=25, height=3, relief=tk.FLAT, cursor="hand2")
     update_btn.pack(pady=20)
     
     edit_window.focus_set()
@@ -291,58 +321,114 @@ def edit():
 def remove():
     sel = listbox.curselection()
     if not sel:
-        messagebox.showwarning("Error", "Select a notice!")
-        return
-    removal = simpledialog.askstring("Remove", "Do you want to remove this notice? Type 'YES' to confirm:")
-    if removal is None:
-        messagebox.showwarning("Error", "Removal cancelled!")
-        return
-    if removal.upper() != "YES":
-        messagebox.showwarning("Error", "Removal cancelled! You must type 'YES'")
-        return
-    notices.pop(sel[0])
-    save_notices()
-    show_board()
-    messagebox.showinfo("Success", "Notice has been removed!")
+        return 
+    
+    index = sel[0]
+    
+    if not notices or index >= len(notices):
+         return 
+    
+    
+    def confirm_removal():
+        confirm_window = tk.Toplevel(window)
+        confirm_window.title("Confirm Removal")
+        confirm_window.geometry("400x200")
+        confirm_window.resizable(False, False)
+        confirm_window.transient(window)
+        confirm_window.grab_set()
 
+        
+        try:
+            if 'icon' in globals() and icon:
+                confirm_window.iconphoto(False, icon)
+        except:
+            pass
+        
+
+        tk.Label(confirm_window, text="Confirm deletion:", font=("Helvetica", 12, "bold")).pack(pady=20)
+        
+        confirm_entry = tk.Entry(confirm_window, font=("Helvetica", 11), relief=tk.SOLID, bd=2)
+        confirm_entry.insert(0, "Type 'YES' to confirm")
+        confirm_entry.pack(pady=5, padx=20, fill="x", ipady=5)
+
+        
+        
+        def process_confirmation():
+            if confirm_entry.get().strip().upper() == "YES":
+                notices.pop(index)
+                save_notices()
+                show_board()
+                confirm_window.destroy()
+                
+            else:
+                return 
+
+        btn_frame = tk.Frame(confirm_window)
+        btn_frame.pack(pady=10)
+
+        tk.Button(btn_frame, text="Confirm", command=process_confirmation, font=("Helvetica", 11, "bold"), bg="#FF9999", width=10).pack(side=tk.LEFT, padx=10)
+        tk.Button(btn_frame, text="Cancel", command=confirm_window.destroy, font=("Helvetica", 11, "bold"), bg="#D3D3D3", width=10).pack(side=tk.LEFT, padx=10)
+
+        confirm_window.focus_set()
+        confirm_entry.focus()
+
+    confirm_removal()
 
 def view():
     sel = listbox.curselection()
     if not sel:
-        messagebox.showwarning("Error", "Select a notice!")
-        return
+        return 
     
-    selected_notice = notices[sel[0]]
+    index = sel[0]
+    
+    if not notices or index >= len(notices):
+         return 
+         
+    selected_notice = notices[index]
     
     if isinstance(selected_notice, dict):
-        notice_text = selected_notice['description']
-        notice_title = selected_notice['title']
+        notice_text = selected_notice.get('description', 'No description provided.')
+        notice_title = selected_notice.get('title', 'Notice Details')
     else:
         notice_text = selected_notice
         notice_title = "Notice"
     
     view_window = tk.Toplevel(window)
     view_window.title(f"View Notice - {notice_title}")
-    view_window.geometry("500x400")
-    view_window.resizable(False, False)
+    view_window.geometry("900x700")
+    view_window.resizable(True, True) 
     view_window.configure(bg="white")
     
     view_window.transient(window)
     view_window.grab_set()
+
     
-    title_label = tk.Label(view_window, text=notice_title, font=("Helvetica", 12, "bold"), bg="lightblue")
+    try:
+        if 'icon' in globals() and icon:
+            view_window.iconphoto(False, icon)
+    except:
+        pass
+    
+    
+    title_label = tk.Label(view_window, text=notice_title, font=("Helvetica", 16, "bold"), bg="lightblue", pady=10)
     title_label.pack(pady=5, padx=10, fill="x")
     
-    scrollbar = tk.Scrollbar(view_window)
+    text_frame = tk.Frame(view_window, padx=20, pady=15)
+    text_frame.pack(fill="both", expand=True) 
+
+    scrollbar = tk.Scrollbar(text_frame)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    text_widget = tk.Text(view_window, font=("Helvetica", 11), relief=tk.SOLID, bd=1, wrap=tk.WORD, padx=10, pady=10)
-    text_widget.pack(pady=10, padx=20, fill="both", expand=True)
+    text_widget = tk.Text(text_frame, font=("Helvetica", 13), relief=tk.SOLID, bd=2, wrap=tk.WORD, padx=15, pady=15, yscrollcommand=scrollbar.set)
+    text_widget.pack(side=tk.LEFT, fill="both", expand=True) 
+
+    scrollbar.config(command=text_widget.yview)
+    
     text_widget.insert("1.0", notice_text)
     text_widget.config(state=tk.DISABLED)
     
-    close_btn = tk.Button(view_window, text="Close", command=view_window.destroy, font=("Helvetica", 12, "bold"), bg="purple", fg="white", width=15, height=2, relief=tk.FLAT, cursor="hand2")
-    close_btn.pack(pady=20)
+    close_btn = tk.Button(view_window, text="Close", command=view_window.destroy, font=("Helvetica", 13, "bold"), bg="#D8BFD8", fg="#1a1a1a", width=25, height=3, relief=tk.FLAT, cursor="hand2")
+    close_btn.pack(pady=20, padx=20)
 
 def logout():
     global current_user
@@ -354,69 +440,94 @@ def logout():
     btn_remove.config(state=tk.DISABLED)
     btn_view_notice.config(state=tk.DISABLED)
     btn_register.config(state=tk.NORMAL)
-    btn_logout.config(state=tk.DISABLED)
-    btn_login.config(state=tk.NORMAL)
+    btn_login.config(state=tk.NORMAL, text="Login", command=login)
     show_board()
+
+def show_board():
+    listbox.delete(0, tk.END)
+    if current_user is None:
+        listbox.insert(tk.END, "(* Please sign in to check notices *)")
+        return
+
+    if not notices:
+        listbox.insert(tk.END, "(* No notices available *)")
+        return
+
+    for i, notice in enumerate(notices, 1):
+        if isinstance(notice, dict):
+            listbox.insert(tk.END, f"{i}. {notice['title']}")
+        else:
+            listbox.insert(tk.END, f"{i}. {notice}")
+
 
 window = tk.Tk()
 window.title("Notice Board")
-window.geometry("725x525")
-window.resizable(False, False)
+window.geometry("1100x700")
+window.resizable(True, True) 
 
+icon = None
+photo1 = None
 
 try:
     window.iconbitmap("noticeboard.png")
 except:
     pass
-
 try:
     window.iconbitmap("noticeboard.ico")
 except:
     pass
-
 try:
-    icon = tk.PhotoImage(file='D:\\pie thon\\icons\\noticeboard.png')
+    
+    icon = tk.PhotoImage(file='D:\pie thon\\icons\\noticeboard.png')
     window.iconphoto(False, icon)
+    
     photo1 = icon.subsample(6, 6)
 except:
     photo1 = None
 
-title = tk.Label(window, text="The Notice Board", font=("Montserrat", 14, "bold"), image=photo1, compound="left")
-title.pack(pady=5)
+title = tk.Label(window, text="The Notice Board", font=("Montserrat", 18, "bold"), image=photo1, compound="left")
+title.pack(pady=10)
 
-listbox = tk.Listbox(window, height=17, relief=tk.FLAT, width=80, font=("Montserrat", 10))
-listbox.pack(padx=10, pady=10)
+listbox_frame = tk.Frame(window, padx=15, pady=15)
+listbox_frame.pack(fill="both", expand=True)
+
+listbox_scrollbar = tk.Scrollbar(listbox_frame)
+listbox_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+listbox = tk.Listbox(listbox_frame, height=22, relief=tk.FLAT, font=("Montserrat", 11), yscrollcommand=listbox_scrollbar.set)
+listbox.pack(side=tk.LEFT, fill="both", expand=True)
+
+listbox_scrollbar.config(command=listbox.yview)
 
 frame = tk.Frame(window)
-frame.pack(pady=5)
+frame.pack(pady=8)
 
-frame2 = tk.Frame(window)
-frame2.pack(pady=5)
+frame2 = tk.Frame(window) 
+frame2.pack(pady=8)
 
-btn_login = tk.Button(frame, text="Login", command=login, relief=tk.FLAT, width=12, bg="#1a5bb8", fg="white", font=("Helvetica", 10, "bold"))
-btn_login.pack(side=tk.LEFT, padx=5)
+btn_login = tk.Button(frame, text="Login", command=login, relief=tk.FLAT, width=15, height=2, bg="#87CEEB", fg="#1a1a1a", font=("Helvetica", 12, "bold"))
+btn_login.pack(side=tk.LEFT, padx=8)
 
-btn_add = tk.Button(frame, text="Add", command=add, width=12, relief=tk.FLAT, bg="#1e7e34", fg="white", font=("Helvetica", 10, "bold"), state=tk.DISABLED)
-btn_add.pack(side=tk.LEFT, padx=5)
+btn_add = tk.Button(frame, text="Add", command=add, width=15, height=2, relief=tk.FLAT, bg="#90EE90", fg="#1a1a1a", font=("Helvetica", 12, "bold"), state=tk.DISABLED)
+btn_add.pack(side=tk.LEFT, padx=8)
 
-btn_edit = tk.Button(frame, text="Edit", command=edit, width=12, relief=tk.FLAT, bg="#d68910", fg="white", font=("Helvetica", 10, "bold"), state=tk.DISABLED)
-btn_edit.pack(side=tk.LEFT, padx=5)
+btn_edit = tk.Button(frame, text="Edit", command=edit, width=15, height=2, relief=tk.FLAT, bg="#FFD699", fg="#1a1a1a", font=("Helvetica", 12, "bold"), state=tk.DISABLED)
+btn_edit.pack(side=tk.LEFT, padx=8)
 
-btn_remove = tk.Button(frame, text="Remove", command=remove, width=12, relief=tk.FLAT, bg="#c0392b", fg="white", font=("Helvetica", 10, "bold"), state=tk.DISABLED)
-btn_remove.pack(side=tk.LEFT, padx=5)
+btn_remove = tk.Button(frame, text="Remove", command=remove, width=15, height=2, relief=tk.FLAT, bg="#FF9999", fg="#1a1a1a", font=("Helvetica", 12, "bold"), state=tk.DISABLED)
+btn_remove.pack(side=tk.LEFT, padx=8)
 
-btn_view_notice = tk.Button(frame, text="View", command=view, relief=tk.FLAT, width=12, bg="#4a235a", fg="white", font=("Helvetica", 10, "bold"), state=tk.DISABLED)
-btn_view_notice.pack(side=tk.LEFT, padx=5)
+btn_view_notice = tk.Button(frame, text="View", command=view, relief=tk.FLAT, width=15, height=2, bg="#D8BFD8", fg="#1a1a1a", font=("Helvetica", 12, "bold"), state=tk.DISABLED)
+btn_view_notice.pack(side=tk.LEFT, padx=8)
 
-btn_logout = tk.Button(frame, text="Log Out", relief=tk.FLAT, command=logout, width=12, bg="#1a252f", fg="white", font=("Helvetica", 10, "bold"), state=tk.DISABLED)
-btn_logout.pack(side=tk.RIGHT, padx=5)
+btn_register = tk.Button(frame, text="Register", command=register, relief=tk.FLAT, width=15, height=2, bg="#E6B8FF", fg="#1a1a1a", font=("Helvetica", 12, "bold"))
+btn_register.pack(padx=8)
 
-btn_register = tk.Button(frame2, text="Register", command=register, relief=tk.FLAT, width=12, bg="#6b1d7a", fg="white", font=("Helvetica", 10, "bold"))
-btn_register.pack(padx=5)
-
-status_label = tk.Label(window, text="Logged in as: None", font=("Helvetica", 9), fg="gray", justify=tk.LEFT)
-status_label.pack(side=tk.BOTTOM, anchor=tk.SW, padx=10, pady=5)
+status_label = tk.Label(window, text="Logged in as: None", font=("Helvetica", 11), fg="gray", justify=tk.LEFT)
+status_label.pack(side=tk.BOTTOM, anchor=tk.SW, padx=15, pady=8)
 
 load_notices()
 load_teachers()
+show_board() 
+
 window.mainloop()

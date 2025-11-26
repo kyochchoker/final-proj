@@ -34,10 +34,18 @@ def save_notices():
     with open(notice_file, "w") as json_data:
         json.dump(notices, json_data)
 
+def validate_teacher_id(tid):
+    """Validate that teacher ID is max 10 characters"""
+    return len(tid) <= 10
+
+def validate_password(pwd):
+    """Validate that password is at least 8 characters"""
+    return len(pwd) >= 8
+
 def register():
     regis_window = tk.Toplevel(window)
     regis_window.title("Registration")
-    regis_window.geometry("600x700")
+    regis_window.geometry("600x700")  # Changed from 600x800 to 600x700
     regis_window.resizable(False, False)
     regis_window.configure(bg="white")
     
@@ -49,60 +57,102 @@ def register():
             regis_window.iconphoto(False, icon)
     except:
         pass
-    
 
     title_label = tk.Label(regis_window, text="Teacher Registration", font=("Helvetica", 24, "bold"), bg="white")
-    title_label.pack(pady=40)
+    title_label.pack(pady=20)  # Changed from pady=40 to pady=20
     
-    name_label = tk.Label(regis_window, text="Teacher Name:", font=("Helvetica", 13), bg="white", anchor="w")
-    name_label.pack(pady=(15, 8), padx=50, fill="x")
-    name_entry = tk.Entry(regis_window, font=("Helvetica", 13), relief=tk.SOLID, bd=2)
-    name_entry.pack(pady=8, padx=50, fill="x", ipady=8)
+    ln_label = tk.Label(regis_window, text="Last Name:", font=("Helvetica", 13), bg="white", anchor="w")
+    ln_label.pack(pady=(10, 5), padx=50, fill="x")  # Changed from pady=(15, 8)
+    ln_entry = tk.Entry(regis_window, font=("Helvetica", 13), relief=tk.SOLID, bd=2)
+    ln_entry.pack(pady=5, padx=50, fill="x", ipady=6)  # Changed from pady=8, ipady=8
     
-    id_label = tk.Label(regis_window, text="Teacher ID:", font=("Helvetica", 13), bg="white", anchor="w")
-    id_label.pack(pady=(20, 8), padx=50, fill="x")
+    fn_label = tk.Label(regis_window, text="First Name:", font=("Helvetica", 13), bg="white", anchor="w")
+    fn_label.pack(pady=(10, 5), padx=50, fill="x")
+    fn_entry = tk.Entry(regis_window, font=("Helvetica", 13), relief=tk.SOLID, bd=2)
+    fn_entry.pack(pady=5, padx=50, fill="x", ipady=6)
+    
+    mi_label = tk.Label(regis_window, text="Middle Initial (or N/A):", font=("Helvetica", 13), bg="white", anchor="w")
+    mi_label.pack(pady=(10, 5), padx=50, fill="x")
+    mi_entry = tk.Entry(regis_window, font=("Helvetica", 13), relief=tk.SOLID, bd=2)
+    mi_entry.pack(pady=5, padx=50, fill="x", ipady=6)
+    
+    id_label = tk.Label(regis_window, text="Teacher ID (max 10 characters):", font=("Helvetica", 13), bg="white", anchor="w")
+    id_label.pack(pady=(10, 5), padx=50, fill="x")
     id_entry = tk.Entry(regis_window, font=("Helvetica", 13), relief=tk.SOLID, bd=2)
-    id_entry.pack(pady=8, padx=50, fill="x", ipady=8)
+    id_entry.pack(pady=5, padx=50, fill="x", ipady=6)
     
-    pwd_label = tk.Label(regis_window, text="Password:", font=("Helvetica", 13), bg="white", anchor="w")
-    pwd_label.pack(pady=(20, 8), padx=50, fill="x")
+    pwd_label = tk.Label(regis_window, text="Password (min 8 characters):", font=("Helvetica", 13), bg="white", anchor="w")
+    pwd_label.pack(pady=(10, 5), padx=50, fill="x")
     pwd_entry = tk.Entry(regis_window, font=("Helvetica", 13), show="*", relief=tk.SOLID, bd=2)
-    pwd_entry.pack(pady=8, padx=50, fill="x", ipady=8)
+    pwd_entry.pack(pady=5, padx=50, fill="x", ipady=6)
     
     confirm_pwd_label = tk.Label(regis_window, text="Confirm Password:", font=("Helvetica", 13), bg="white", anchor="w")
-    confirm_pwd_label.pack(pady=(20, 8), padx=50, fill="x")
+    confirm_pwd_label.pack(pady=(10, 5), padx=50, fill="x")
     confirm_pwd_entry = tk.Entry(regis_window, font=("Helvetica", 13), show="*", relief=tk.SOLID, bd=2)
-    confirm_pwd_entry.pack(pady=8, padx=50, fill="x", ipady=8)
-
+    confirm_pwd_entry.pack(pady=5, padx=50, fill="x", ipady=6)
     
+    error_label = tk.Label(regis_window, text="", font=("Helvetica", 11), bg="white", fg="red")
+    error_label.pack(pady=3)  # Changed from pady=5
     
     def submit():
-        name = name_entry.get().strip()
+        ln = ln_entry.get().strip()
+        fn = fn_entry.get().strip()
+        mi = mi_entry.get().strip()
         tid = id_entry.get().strip()
         pwd = pwd_entry.get().strip()
         confirm_pwd = confirm_pwd_entry.get().strip()
         
-        
-
-        if not name or not tid or not pwd or not confirm_pwd:
+        if not ln:
+            error_label.config(text="Error: Last Name is required!")
+            return
+        if not fn:
+            error_label.config(text="Error: First Name is required!")
+            return
+        if not mi:
+            error_label.config(text="Error: Middle Initial is required! (Use N/A if not applicable)")
+            return
+        if not tid:
+            error_label.config(text="Error: Teacher ID is required!")
+            return
+        if not pwd:
+            error_label.config(text="Error: Password is required!")
             return
         
+        if not confirm_pwd:
+            error_label.config(text="Error: Confirm Password is required!")
+            return
+        
+        if not validate_teacher_id(tid):
+            error_label.config(text="Error: Teacher ID must be max 10 characters!")
+            return
+        
+        if not validate_password(pwd):
+            error_label.config(text="Error: Password must be at least 8 characters!")
+            return
+
         if pwd != confirm_pwd:
+            error_label.config(text="Error: Passwords do not match!")
             return
         
         if tid in teachers:
+            error_label.config(text="Error: Teacher ID already exists!")
             return
         
-        teachers[tid] = {"password": pwd, "name": name}
+        # Create full name with Last Name, First Name, MI format
+        full_name = f"{ln}, {fn}, {mi}"
+        
+        # Store teacher data
+        teachers[tid] = {"password": pwd, "name": full_name}
         save_teachers()
+        
+        error_label.config(text="", fg="green")
         regis_window.destroy()
         
-    
-    register_btn = tk.Button(regis_window, text="Register", command=submit, font=("Helvetica", 14, "bold"), bg="#90EE90", fg="#1a1a1a", width=25, height=3, relief=tk.FLAT, cursor="hand2")
-    register_btn.pack(pady=40)
+    register_btn = tk.Button(regis_window, text="Register", command=submit, font=("Helvetica", 14, "bold"), bg="#90EE90", fg="#1a1a1a", width=25, height=2, relief=tk.FLAT, cursor="hand2")  # Changed height from 3 to 2
+    register_btn.pack(pady=15)  # Changed from pady=30 to pady=15
     
     regis_window.focus_set()
-    name_entry.focus()
+    ln_entry.focus()
 
 def login():
     global current_user
@@ -116,18 +166,16 @@ def login():
     login_window.transient(window)
     login_window.grab_set()
 
-    
     try:
         if 'icon' in globals() and icon:
             login_window.iconphoto(False, icon)
     except:
         pass
     
-    
     title_label = tk.Label(login_window, text="Teacher Login", font=("Helvetica", 24, "bold"), bg="white")
     title_label.pack(pady=40)
     
-    id_label = tk.Label(login_window, text="Teacher ID:", font=("Helvetica", 13), bg="white", anchor="w")
+    id_label = tk.Label(login_window, text="Teacher ID (max 10 characters):", font=("Helvetica", 13), bg="white", anchor="w")
     id_label.pack(pady=(20, 8), padx=50, fill="x")
     id_entry = tk.Entry(login_window, font=("Helvetica", 13), relief=tk.SOLID, bd=2)
     id_entry.pack(pady=8, padx=50, fill="x", ipady=8)
@@ -136,17 +184,16 @@ def login():
     pwd_label.pack(pady=(20, 8), padx=50, fill="x")
     pwd_entry = tk.Entry(login_window, font=("Helvetica", 13), show="*", relief=tk.SOLID, bd=2)
     pwd_entry.pack(pady=8, padx=50, fill="x", ipady=8)
-
-    
     
     def submit_login():
         global current_user
         tid = id_entry.get().strip()
         pwd = pwd_entry.get().strip()
-        
-        
 
         if not tid or not pwd:
+            return
+        
+        if not validate_teacher_id(tid):
             return
         
         if tid == "admin" and pwd == "admin123":
@@ -193,13 +240,11 @@ def add():
     add_window.transient(window)
     add_window.grab_set()
 
-    
     try:
         if 'icon' in globals() and icon:
             add_window.iconphoto(False, icon)
     except:
         pass
-    
     
     header_label = tk.Label(add_window, text="Add New Notice", font=("Helvetica", 24, "bold"), bg="white")
     header_label.pack(pady=40)
@@ -220,8 +265,6 @@ def add():
         title = title_entry.get().strip()
         description = desc_text.get("1.0", tk.END).strip()
         
-        
-        
         if not title:
             return
         
@@ -233,7 +276,6 @@ def add():
         save_notices()
         show_board()
         add_window.destroy()
-        
     
     add_btn = tk.Button(add_window, text="Add Notice", command=submit_notice, font=("Helvetica", 14, "bold"), bg="#90EE90", fg="#1a1a1a", width=25, height=3, relief=tk.FLAT, cursor="hand2")
     add_btn.pack(pady=20)
@@ -245,12 +287,11 @@ def edit():
     sel = listbox.curselection()
     if not sel:
         return 
-    
     index = sel[0]
-    
+
     if not notices or index >= len(notices):
          return 
-         
+    
     selected_notice = notices[index]
     
     if isinstance(selected_notice, str):
@@ -269,13 +310,11 @@ def edit():
     edit_window.transient(window)
     edit_window.grab_set()
 
-    
     try:
         if 'icon' in globals() and icon:
             edit_window.iconphoto(False, icon)
     except:
         pass
-    
     
     header_label = tk.Label(edit_window, text="Edit Notice", font=("Helvetica", 24, "bold"), bg="white")
     header_label.pack(pady=40)
@@ -345,7 +384,7 @@ def remove():
             pass
         
 
-        tk.Label(confirm_window, text="Confirm deletion:", font=("Helvetica", 12, "bold")).pack(pady=20)
+        tk.Label(confirm_window, text="Confirm Deletion:", font=("Helvetica", 12, "bold")).pack(pady=20)
         
         confirm_entry = tk.Entry(confirm_window, font=("Helvetica", 11), relief=tk.SOLID, bd=2)
         confirm_entry.insert(0, "Type 'YES' to confirm")
@@ -359,15 +398,14 @@ def remove():
                 save_notices()
                 show_board()
                 confirm_window.destroy()
-                
             else:
                 return 
 
         btn_frame = tk.Frame(confirm_window)
         btn_frame.pack(pady=10)
 
-        tk.Button(btn_frame, text="Confirm", command=process_confirmation, font=("Helvetica", 11, "bold"), bg="#FF9999", width=10).pack(side=tk.LEFT, padx=10)
-        tk.Button(btn_frame, text="Cancel", command=confirm_window.destroy, font=("Helvetica", 11, "bold"), bg="#D3D3D3", width=10).pack(side=tk.LEFT, padx=10)
+        tk.Button(btn_frame, text="Confirm", command=process_confirmation, font=("Helvetica", 11, "bold"), bg="#FF9999",relief=tk.FLAT, width=10).pack(side=tk.LEFT, padx=10)
+        tk.Button(btn_frame, text="Cancel", command=confirm_window.destroy, font=("Helvetica", 11, "bold"), bg="#D3D3D3",relief=tk.FLAT,     width=10).pack(side=tk.LEFT, padx=10)
 
         confirm_window.focus_set()
         confirm_entry.focus()

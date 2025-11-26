@@ -45,7 +45,7 @@ def validate_password(pwd):
 def register():
     regis_window = tk.Toplevel(window)
     regis_window.title("Registration")
-    regis_window.geometry("600x700")  # Changed from 600x800 to 600x700
+    regis_window.geometry("600x750")  
     regis_window.resizable(False, False)
     regis_window.configure(bg="white")
     
@@ -59,12 +59,12 @@ def register():
         pass
 
     title_label = tk.Label(regis_window, text="Teacher Registration", font=("Helvetica", 24, "bold"), bg="white")
-    title_label.pack(pady=20)  # Changed from pady=40 to pady=20
+    title_label.pack(pady=20)
     
     ln_label = tk.Label(regis_window, text="Last Name:", font=("Helvetica", 13), bg="white", anchor="w")
-    ln_label.pack(pady=(10, 5), padx=50, fill="x")  # Changed from pady=(15, 8)
+    ln_label.pack(pady=(10, 5), padx=50, fill="x")  
     ln_entry = tk.Entry(regis_window, font=("Helvetica", 13), relief=tk.SOLID, bd=2)
-    ln_entry.pack(pady=5, padx=50, fill="x", ipady=6)  # Changed from pady=8, ipady=8
+    ln_entry.pack(pady=5, padx=50, fill="x", ipady=6)  
     
     fn_label = tk.Label(regis_window, text="First Name:", font=("Helvetica", 13), bg="white", anchor="w")
     fn_label.pack(pady=(10, 5), padx=50, fill="x")
@@ -92,7 +92,7 @@ def register():
     confirm_pwd_entry.pack(pady=5, padx=50, fill="x", ipady=6)
     
     error_label = tk.Label(regis_window, text="", font=("Helvetica", 11), bg="white", fg="red")
-    error_label.pack(pady=3)  # Changed from pady=5
+    error_label.pack(pady=3) 
     
     def submit():
         ln = ln_entry.get().strip()
@@ -138,18 +138,16 @@ def register():
             error_label.config(text="Error: Teacher ID already exists!")
             return
         
-        # Create full name with Last Name, First Name, MI format
         full_name = f"{ln}, {fn}, {mi}"
         
-        # Store teacher data
         teachers[tid] = {"password": pwd, "name": full_name}
         save_teachers()
         
         error_label.config(text="", fg="green")
         regis_window.destroy()
         
-    register_btn = tk.Button(regis_window, text="Register", command=submit, font=("Helvetica", 14, "bold"), bg="#90EE90", fg="#1a1a1a", width=25, height=2, relief=tk.FLAT, cursor="hand2")  # Changed height from 3 to 2
-    register_btn.pack(pady=15)  # Changed from pady=30 to pady=15
+    register_btn = tk.Button(regis_window, text="Register", command=submit, font=("Helvetica", 14, "bold"), bg="#90EE90", fg="#1a1a1a", width=25, height=2, relief=tk.FLAT, cursor="hand2") 
+    register_btn.pack(pady=15)  
     
     regis_window.focus_set()
     ln_entry.focus()

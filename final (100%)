@@ -42,6 +42,16 @@ def validate_password(pwd):
     """Validate that password is at least 8 characters"""
     return len(pwd) >= 8
 
+def is_title_duplicate(title, exclude_index=None):
+    """Check if a notice title already exists"""
+    for i, notice in enumerate(notices):
+        if i == exclude_index:
+            continue
+        existing_title = notice.get("title", "") if isinstance(notice, dict) else notice
+        if existing_title.lower().strip() == title.lower().strip():
+            return True
+    return False
+
 def register():
     regis_window = tk.Toplevel(window)
     regis_window.title("Registration")
@@ -257,16 +267,23 @@ def add():
     desc_text = tk.Text(add_window, font=("Helvetica", 12), relief=tk.SOLID, bd=2, height=10, wrap=tk.WORD)
     desc_text.pack(pady=8, padx=50, fill="both", expand=True)
 
-    
+    error_label = tk.Label(add_window, text="", font=("Helvetica", 11), bg="white", fg="red")
+    error_label.pack(pady=5)
     
     def submit_notice():
         title = title_entry.get().strip()
         description = desc_text.get("1.0", tk.END).strip()
         
         if not title:
+            error_label.config(text="Error: Notice title is required!")
             return
         
         if not description:
+            error_label.config(text="Error: Notice description is required!")
+            return
+        
+        if is_title_duplicate(title):
+            error_label.config(text="Error: A notice with this title already exists!")
             return
         
         notice = {"title": title, "description": description}
@@ -329,18 +346,23 @@ def edit():
     desc_text.pack(pady=8, padx=50, fill="both", expand=True)
     desc_text.insert("1.0", old_desc)
 
-    
+    error_label = tk.Label(edit_window, text="", font=("Helvetica", 11), bg="white", fg="red")
+    error_label.pack(pady=5)
     
     def submit_edit():
         title = title_entry.get().strip()
         description = desc_text.get("1.0", tk.END).strip()
         
-        
-
         if not title:
+            error_label.config(text="Error: Notice title is required!")
             return
         
         if not description:
+            error_label.config(text="Error: Notice description is required!")
+            return
+        
+        if is_title_duplicate(title, exclude_index=index):
+            error_label.config(text="Error: A notice with this title already exists!")
             return
         
         notices[index] = {"title": title, "description": description}
@@ -565,5 +587,4 @@ status_label.pack(side=tk.BOTTOM, anchor=tk.SW, padx=15, pady=8)
 load_notices()
 load_teachers()
 show_board() 
-
 window.mainloop()
